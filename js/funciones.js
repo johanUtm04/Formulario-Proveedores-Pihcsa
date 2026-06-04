@@ -48,7 +48,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     return response.json();
                 })
                 .then(data => {
-                    // Mapeo basado en las columnas de la tabla registro_proveedores
                     const camposInteres = [
                         { name: 'razon_social', value: data.razon_social || "" },
                         { name: 'domicilio', value: data.domicilio || "" },

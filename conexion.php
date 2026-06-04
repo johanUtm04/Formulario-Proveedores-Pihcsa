@@ -1,8 +1,8 @@
 <?php
 $host = "localhost";
 $user = "root"; 
-$pass = "zorro2011"; 
-$db   = "formulario"; 
+$pass = ""; 
+$db   = "pihcsa_dossier_clients_providers"; 
 
 $conexion = mysqli_connect($host, $user, $pass, $db);
 

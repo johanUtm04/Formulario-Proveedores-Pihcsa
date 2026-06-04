@@ -15,7 +15,7 @@ if (!$rfc) {
 }
 
 // Consulta a la tabla correcta de proveedores
-$query = "SELECT * FROM registro_proveedores WHERE rfc = '$rfc' LIMIT 1";
+$query = "SELECT * FROM providers_form WHERE rfc = '$rfc' LIMIT 1";
 $res = mysqli_query($conexion, $query);
 
 if ($row = mysqli_fetch_assoc($res)) {
