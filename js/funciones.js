@@ -183,13 +183,13 @@ function gestionarChecksVisuales(archivos) {
         'doc_aviso_responsable_sanitario': 'file_aviso_rs',
         'doc_aviso_funcionamiento': 'file_funcionamiento', // Corregido: antes apuntaba a aviso_rs
         'doc_constancia_situacion_fiscal': 'file_constancia',
-        'doc_opinion_cumplimiento': 'file_opinion',
-        'doc_caratula_bancaria': 'file_banco',
+        'doc_opinion_cumplimiento_sat': 'file_opinion',
+        'doc_caratula_cuenta_bancaria': 'file_banco',
         'doc_comprobante_domicilio': 'file_domicilio',
         'doc_registro_sanitario_vigente': 'file_registro_v',
         'doc_ine_representante_legal': 'file_ine_r',
         'doc_ine_responsable_sanitario': 'file_ine_s',
-        'img_placa_responsable': 'file_placa',
+        'img_placa_responsable_sanitario': 'file_placa',
         'img_fachada_calle': 'file_fachada',
         'img_vista_interna_almacen': 'file_almacen'
     };

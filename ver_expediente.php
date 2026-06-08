@@ -30,8 +30,54 @@ if (!$resultado || mysqli_num_rows($resultado) === 0) {
     die("Error: El expediente solicitado no existe.");
 }
 
-$cliente = mysqli_fetch_assoc($resultado);
+$registro_crudo = mysqli_fetch_assoc($resultado);
+
+// SOLUCIÓN DEL FATAL ERROR: Se cierra la sentencia preparada ($stmt), no la conexión ($conexion)
 mysqli_stmt_close($stmt);
+
+// ADAPTADOR DINÁMICO: Normaliza la estructura para la vista unificada
+$cliente = [];
+if ($tipo === 'Proveedor') {
+    $cliente['razon_social'] = $registro_crudo['razon_social'] ?? '';
+    $cliente['rfc']          = $registro_crudo['rfc'] ?? '';
+    $cliente['email']        = $registro_crudo['email'] ?? '';
+    $cliente['telefono']     = $registro_crudo['telefono'] ?? '';
+    $cliente['domicilio']    = $registro_crudo['domicilio'] ?? '';
+    $cliente['colonia']      = $registro_crudo['colonia'] ?? '';
+    $cliente['cp']           = $registro_crudo['cp'] ?? '';
+    $cliente['poblacion']    = $registro_crudo['poblacion'] ?? '';
+    $cliente['estado']       = $registro_crudo['estado'] ?? '';
+    
+    // Documentos comunes mapeados a las columnas reales de providers_form (snake_case)
+    $cliente['doc_licencia_sanitaria']         = $registro_crudo['doc_licencia_sanitaria'] ?? '';
+    $cliente['doc_aviso_responsableSanitario']   = $registro_crudo['doc_aviso_responsable_sanitario'] ?? '';
+    $cliente['doc_aviso_funcionamiento']        = $registro_crudo['doc_aviso_funcionamiento'] ?? '';
+    $cliente['doc_comprobante_domicilio']      = $registro_crudo['doc_comprobante_domicilio'] ?? '';
+    $cliente['doc_ine_representanteLegal']     = $registro_crudo['doc_ine_representante_legal'] ?? '';
+    $cliente['doc_ine_responsableSanitario']    = $registro_crudo['doc_ine_responsable_sanitario'] ?? '';
+    
+    // Documentos exclusivos de proveedores
+    $cliente['doc_situacion_fiscal']           = $registro_crudo['doc_situacion_fiscal'] ?? ''; 
+    $cliente['doc_opinion_cumplimiento_sat']       = $registro_crudo['doc_opinion_cumplimiento_sat'] ?? '';
+    $cliente['doc_caratula_cuenta_bancaria']          = $registro_crudo['doc_caratula_cuenta_bancaria'] ?? '';
+    $cliente['doc_registro_sanitario_vigente']  = $registro_crudo['doc_registro_sanitario_vigente'] ?? '';
+    $cliente['doc_hoja_seguridad_ficha_tecnica']     = $registro_crudo['doc_hoja_seguridad_ficha_tecnica'] ?? '';
+
+    // Estructura de imágenes para proveedor
+    $cliente['img_placa_responsable_sanitario']          = $registro_crudo['img_placa_responsable_sanitario'] ?? '';
+    $cliente['img_fachada']                    = $registro_crudo['img_fachada_calle'] ?? '';
+    $cliente['img_almacen']                    = $registro_crudo['img_vista_interna_almacen'] ?? '';
+    $cliente['privacy_agreement_accepted']                  = $registro_crudo['privacy_agreement_accepted'] ?? null;
+} else {
+    // Si es Cliente, pasamos el arreglo directo pero inicializamos los campos extras vacíos para evitar 'Undefined index'
+    $cliente = $registro_crudo;
+    $cliente['doc_situacion_fiscal']           = '';
+    $cliente['doc_opinion_cumplimiento_sat']       = '';
+    $cliente['doc_caratula_cuenta_bancaria']          = '';
+    $cliente['doc_registro_sanitario_vigente']  = '';
+    $cliente['doc_hoja_seguridad_ficha_tecnica']     = '';
+    $cliente['img_placa_responsable_sanitario']          = '';
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -104,10 +150,11 @@ mysqli_stmt_close($stmt);
             border-radius: 4px;
         }
         .docs-section h3 {
-            color: #333;
+            color: #005596;
             border-bottom: 1px solid #eee;
             padding-bottom: 8px;
             font-size: 16px;
+            margin-top: 25px;
         }
         .docs-list {
             list-style: none;
@@ -174,7 +221,7 @@ mysqli_stmt_close($stmt);
     </div>
 
     <div class="docs-section">
-        <h3>Documentación Adjunta</h3>
+        <h3>Documentación Legal (PDF)</h3>
         <ul class="docs-list">
             <li>
                 <span>Licencia Sanitaria</span>
@@ -230,6 +277,67 @@ mysqli_stmt_close($stmt);
                 <?php endif; ?>
             </li>
 
+            <?php if ($tipo === 'Proveedor'): ?>
+                <li>
+                    <span>Constancia de Situación Fiscal (SAT)</span>
+                    <?php if (!empty($cliente['doc_situacion_fiscal'])): ?>
+                        <a href="leer_documento.php?rfc=<?php echo urlencode($cliente['rfc']); ?>&archivo=<?php echo urlencode($cliente['doc_situacion_fiscal']); ?>" target="_blank" class="btn-view">Ver Documento</a>
+                    <?php else: ?>
+                        <span class="no-doc">No cargado</span>
+                    <?php endif; ?>
+                </li>
+
+                <li>
+                    <span>Opinión de Cumplimiento (SAT)</span>
+                    <?php if (!empty($cliente['doc_opinion_cumplimiento_sat'])): ?>
+                        <a href="leer_documento.php?rfc=<?php echo urlencode($cliente['rfc']); ?>&archivo=<?php echo urlencode($cliente['doc_opinion_cumplimiento_sat']); ?>" target="_blank" class="btn-view">Ver Documento</a>
+                    <?php else: ?>
+                        <span class="no-doc">No cargado</span>
+                    <?php endif; ?>
+                </li>
+
+                <li>
+                    <span>Carátula de Cuenta Bancaria</span>
+                    <?php if (!empty($cliente['doc_caratula_cuenta_bancaria'])): ?>
+                        <a href="leer_documento.php?rfc=<?php echo urlencode($cliente['rfc']); ?>&archivo=<?php echo urlencode($cliente['doc_caratula_cuenta_bancaria']); ?>" target="_blank" class="btn-view">Ver Documento</a>
+                    <?php else: ?>
+                        <span class="no-doc">No cargado</span>
+                    <?php endif; ?>
+                </li>
+
+                <li>
+                    <span>Registro Sanitario Vigente</span>
+                    <?php if (!empty($cliente['doc_registro_sanitario_vigente'])): ?>
+                        <a href="leer_documento.php?rfc=<?php echo urlencode($cliente['rfc']); ?>&archivo=<?php echo urlencode($cliente['doc_registro_sanitario_vigente']); ?>" target="_blank" class="btn-view">Ver Documento</a>
+                    <?php else: ?>
+                        <span class="no-doc">No cargado</span>
+                    <?php endif; ?>
+                </li>
+
+                <li>
+                    <span>Hoja de Seguridad / Ficha Técnica</span>
+                    <?php if (!empty($cliente['doc_hoja_seguridad_ficha_tecnica'])): ?>
+                        <a href="leer_documento.php?rfc=<?php echo urlencode($cliente['rfc']); ?>&archivo=<?php echo urlencode($cliente['doc_hoja_seguridad_ficha_tecnica']); ?>" target="_blank" class="btn-view">Ver Documento</a>
+                    <?php else: ?>
+                        <span class="no-doc">No cargado</span>
+                    <?php endif; ?>
+                </li>
+            <?php endif; ?>
+        </ul>
+
+        <h3>Evidencia Fotográfica e Identidad</h3>
+        <ul class="docs-list">
+            <?php if ($tipo === 'Proveedor'): ?>
+                <li>
+                    <span>Fotografía Placa Responsable Sanitario</span>
+                    <?php if (!empty($cliente['img_placa_responsable_sanitario'])): ?>
+                        <a href="leer_documento.php?rfc=<?php echo urlencode($cliente['rfc']); ?>&archivo=<?php echo urlencode($cliente['img_placa_responsable_sanitario']); ?>" target="_blank" class="btn-view" style="background: #e67e22;">Ver Imagen</a>
+                    <?php else: ?>
+                        <span class="no-doc">Sin Imagen</span>
+                    <?php endif; ?>
+                </li>
+            <?php endif; ?>
+
             <li>
                 <span>Fotografía de la Fachada</span>
                 <?php if (!empty($cliente['img_fachada'])): ?>
@@ -240,22 +348,22 @@ mysqli_stmt_close($stmt);
             </li>
 
             <li>
-                <span>Fotografía Vista Interna</span>
+                <span>Fotografía Vista Interna Almacén</span>
                 <?php if (!empty($cliente['img_almacen'])): ?>
                     <a href="leer_documento.php?rfc=<?php echo urlencode($cliente['rfc']); ?>&archivo=<?php echo urlencode($cliente['img_almacen']); ?>" target="_blank" class="btn-view" style="background: #e67e22;">Ver Imagen</a>
                 <?php else: ?>
                     <span class="no-doc">Sin Imagen</span>
                 <?php endif; ?>
             </li>
-
+<!-- 
             <li>
                 <span>Firma Digital Custodiada</span>
-                <?php if (!empty($cliente['firma_digital'])): ?>
+                <?php if (!empty($cliente['privacy_agreement_accepted'])): ?>
                     <span class="btn-view" style="background: #28a745; cursor: default;">✓ Registrada</span>
                 <?php else: ?>
                     <span class="no-doc" style="color: #dc3545; font-weight: bold;">Falta Firma</span>
                 <?php endif; ?>
-            </li>
+            </li> -->
         </ul>
     </div>
 </div>

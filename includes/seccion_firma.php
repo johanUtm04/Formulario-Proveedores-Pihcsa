@@ -9,7 +9,7 @@
             <div style="width: 100%; max-width: 400px; text-align: center; border-top: 1px solid #ddd; padding-top: 15px;">
                 <p style="font-size: 12px; color: #666; margin-bottom: 5px; text-transform: uppercase;">Escriba su nombre completo (Firma autógrafa digital)</p>
                 <input type="text" 
-                       name="firma_digital" 
+                       name="privacy_agreement_accepted" 
                        id="inputFirma" 
                        placeholder="Nombre y Apellidos" 
                        style="width: 100%; padding: 8px; border: none; border-bottom: 2px solid #005596; background: transparent; text-align: center; font-family: 'Courier New', Courier, monospace; font-size: 16px; outline: none;" 

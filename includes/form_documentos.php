@@ -32,11 +32,11 @@
     </div>
     <div class="segmento-campo">
         <p>Opinión de Cumplimiento (SAT):</p>
-        <input type="file" id="file_opinion" class="campo_file" name="doc_opinion_cumplimiento" accept=".pdf" onchange="marcarAdjunto(this)">
+        <input type="file" id="file_opinion" class="campo_file" name="doc_opinion_cumplimiento_sat" accept=".pdf" onchange="marcarAdjunto(this)">
     </div>
     <div class="segmento-campo">
         <p>Carátula de Cuenta Bancaria:</p>
-        <input type="file" id="file_banco" class="campo_file" name="doc_caratula_bancaria" accept=".pdf" onchange="marcarAdjunto(this)">
+        <input type="file" id="file_banco" class="campo_file" name="doc_caratula_cuenta_bancaria" accept=".pdf" onchange="marcarAdjunto(this)">
     </div>
     <div class="segmento-campo">
         <p>Comprobante de Domicilio:</p>
@@ -48,7 +48,7 @@
     </div>
     <div class="segmento-campo">
         <p>Hoja de Seguridad / Ficha Técnica:</p>
-        <input type="file" id="file_hoja_seg" class="campo_file" name="doc_hoja_seguridad_producto" accept=".pdf" onchange="marcarAdjunto(this)">
+        <input type="file" id="file_hoja_seg" class="campo_file" name="doc_hoja_seguridad_ficha_tecnica" accept=".pdf" onchange="marcarAdjunto(this)">
     </div>
     <div class="segmento-campo">
         <p>INE Representante Legal:</p>
@@ -62,7 +62,7 @@
     <h4 style="color: #005596; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-top: 25px;">Evidencia Fotográfica (JPG/PNG)</h4>
     <div class="segmento-campo">
         <p>Foto Placa de Responsable Sanitario:</p>
-        <input type="file" id="file_placa" class="campo_file" name="img_placa_responsable" accept=".jpg,.jpeg,.png" onchange="marcarAdjunto(this)">
+        <input type="file" id="file_placa" class="campo_file" name="img_placa_responsable_sanitario" accept=".jpg,.jpeg,.png" onchange="marcarAdjunto(this)">
     </div>
     <div class="segmento-campo">
         <p>Foto Fachada de la Calle:</p>
