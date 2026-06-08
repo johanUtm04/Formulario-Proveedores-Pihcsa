@@ -211,7 +211,7 @@ $resultado = mysqli_query($conexion, $sql);
     </div>
 
     <div class="section-title">
-        <h3>Expedientes de Clientes Recientes</h3>
+        <h3>Expedientes de (Proveedores) Recientes</h3>
     </div>
     
     <div class="grid-expedientes">
