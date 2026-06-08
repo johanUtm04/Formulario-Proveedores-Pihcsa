@@ -1,13 +1,11 @@
 <?php
 session_start();
 
-// 1. Validar sesión del administrador
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     header("Location: login.php");
     exit;
 }
 
-// 2. Validar que exista el parámetro RFC en la URL
 if (!isset($_GET['rfc']) || empty(trim($_GET['rfc']))) {
     header("Location: admin.php?error=missing_rfc");
     exit;
@@ -15,9 +13,11 @@ if (!isset($_GET['rfc']) || empty(trim($_GET['rfc']))) {
 
 require_once 'conexion.php';
 $rfc = strtoupper(trim($_GET['rfc']));
+$tipo = isset($_GET['tipo']) ? trim($_GET['tipo']) : 'Cliente';
 
-// 3. Sentencia preparada (Prepared Statement) para mitigar SQL Injection de forma estricta
-$stmt = mysqli_prepare($conexion, "SELECT * FROM clients_form WHERE rfc = ? LIMIT 1");
+$tabla = ($tipo === 'Proveedor') ? 'providers_form' : 'clients_form';
+
+$stmt = mysqli_prepare($conexion, "SELECT * FROM {$tabla} WHERE rfc = ? LIMIT 1");
 if ($stmt) {
     mysqli_stmt_bind_param($stmt, "s", $rfc);
     mysqli_stmt_execute($stmt);
@@ -146,7 +146,7 @@ mysqli_stmt_close($stmt);
 
 <div class="container">
     <div class="header-box">
-        <h2>Expediente Digital Cliente</h2>
+        <h2>Expediente Digital <?php echo htmlspecialchars($tipo); ?></h2>
         <a href="admin.php" class="btn-return">← Volver al Panel</a>
     </div>
 
