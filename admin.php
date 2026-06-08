@@ -8,7 +8,11 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 
 require_once 'conexion.php';
 
-$sql = "SELECT id, razon_social, rfc, fecha_registro FROM clients_form ORDER BY fecha_registro DESC";
+$sql = "SELECT id, razon_social COLLATE utf8mb4_general_ci AS razon_social, rfc COLLATE utf8mb4_general_ci AS rfc, fecha_registro, 'Cliente' AS tipo FROM clients_form 
+        UNION ALL 
+        SELECT id, razon_social COLLATE utf8mb4_general_ci AS razon_social, rfc COLLATE utf8mb4_general_ci AS rfc, fecha_registro, 'Proveedor' AS tipo FROM providers_form 
+        ORDER BY fecha_registro DESC";
+
 $resultado = mysqli_query($conexion, $sql);
 ?>
 
@@ -107,7 +111,7 @@ $resultado = mysqli_query($conexion, $sql);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 240px;
+            min-height: 260px;
             box-sizing: border-box;
         }
 
@@ -117,10 +121,37 @@ $resultado = mysqli_query($conexion, $sql);
             border-color: #005596;
         }
 
+        .top-tarjeta {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
         .icon-folder {
             font-size: 36px;
-            margin-bottom: 12px;
             line-height: 1;
+        }
+
+        .badge-tipo {
+            font-size: 0.72rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-cliente {
+            background-color: #e6fffa;
+            color: #00875a;
+            border: 1px solid #b3f5e4;
+        }
+
+        .badge-proveedor {
+            background-color: #fffaf0;
+            color: #b76e00;
+            border: 1px solid #ffe8cc;
         }
 
         .tarjeta-titulo {
@@ -211,15 +242,16 @@ $resultado = mysqli_query($conexion, $sql);
     </div>
 
     <div class="section-title">
-        <h3>Expedientes de (Proveedores) Recientes</h3>
+        <h3>Expedientes Globales Recientes</h3>
     </div>
     
     <div class="grid-expedientes">
         <?php 
         if ($resultado && mysqli_num_rows($resultado) > 0): 
-            while($cliente = mysqli_fetch_assoc($resultado)): 
-                $rfc_cliente = $cliente['rfc'];
-                $ruta_carpeta = "uploads/" . $rfc_cliente;
+            while($registro = mysqli_fetch_assoc($resultado)): 
+                $rfc_registro = $registro['rfc'];
+                $tipo_registro = $registro['tipo'];
+                $ruta_carpeta = "uploads/" . $rfc_registro;
                 $existe_carpeta = is_dir($ruta_carpeta);
                 
                 $conteo_archivos = 0;
@@ -229,16 +261,23 @@ $resultado = mysqli_query($conexion, $sql);
                         $conteo_archivos = count($archivos);
                     }
                 }
+                
+                $css_badge = ($tipo_registro === 'Cliente') ? 'badge-cliente' : 'badge-proveedor';
         ?>
             <div class="tarjeta-expediente">
                 <div>
-                    <div class="icon-folder">
-                        <?php echo ($existe_carpeta && $conteo_archivos > 0) ? '📁' : '📂'; ?>
+                    <div class="top-tarjeta">
+                        <div class="icon-folder">
+                            <?php echo ($existe_carpeta && $conteo_archivos > 0) ? '📁' : '📂'; ?>
+                        </div>
+                        <span class="badge-tipo <?php echo $css_badge; ?>">
+                            <?php echo $tipo_registro; ?>
+                        </span>
                     </div>
-                    <div class="tarjeta-titulo"><?php echo htmlspecialchars($cliente['razon_social']); ?></div>
+                    <div class="tarjeta-titulo"><?php echo htmlspecialchars($registro['razon_social']); ?></div>
                     <div class="tarjeta-sub">
-                        <strong>RFC:</strong> <?php echo htmlspecialchars($rfc_cliente); ?>
-                        <span>Registrado: <?php echo $cliente['fecha_registro']; ?></span>
+                        <strong>RFC:</strong> <?php echo htmlspecialchars($rfc_registro); ?>
+                        <span>Registrado: <?php echo $registro['fecha_registro']; ?></span>
                     </div>
                 </div>
                 
@@ -247,9 +286,9 @@ $resultado = mysqli_query($conexion, $sql);
                         <div class="badge-archivos">
                             <?php echo $conteo_archivos; ?> <?php echo ($conteo_archivos == 1) ? 'archivo cargado' : 'archivos cargados'; ?>
                         </div>
-                        <a href="ver_expediente.php?rfc=<?php echo urlencode($rfc_cliente); ?>" class="btn-ver">Ver Documentos</a>
+                        <a href="ver_expediente.php?rfc=<?php echo urlencode($rfc_registro); ?>&tipo=<?php echo urlencode($tipo_registro); ?>" class="btn-ver">Ver Documentos</a>
                     <?php else: ?>
-                        <span class="status-empty">Sin carpeta física</span>
+                        <span class="status-empty">Accede desde el panel de Cliente</span>
                     <?php endif; ?>
                 </div>
             </div>
@@ -257,7 +296,7 @@ $resultado = mysqli_query($conexion, $sql);
             endwhile; 
         else: 
         ?>
-            <div class="no-data">No se han encontrado registros de clientes en la base de datos.</div>
+            <div class="no-data">No se han encontrado registros en la base de datos.</div>
         <?php endif; ?>
     </div>
 
